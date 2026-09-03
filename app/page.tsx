@@ -1,11 +1,13 @@
 import Link from "next/link";
+import connectDB from "../lib/mongodb";
+import Product from "../lib/models/Product";
 
 async function getProducts() {
-  const res = await fetch("http://localhost:3000/api/products", {
-    cache: "no-store",
-  });
-  const data = await res.json();
-  return data.products;
+  await connectDB();
+  const products = await Product.find({}).select(
+    "name slug category variants.label variants.price variants.mrp variants.image"
+  );
+  return JSON.parse(JSON.stringify(products));
 }
 
 export default async function HomePage() {
